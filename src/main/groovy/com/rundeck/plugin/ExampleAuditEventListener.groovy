@@ -3,6 +3,7 @@ package com.rundeck.plugin
 import com.dtolabs.rundeck.core.audit.AuditEvent
 import com.dtolabs.rundeck.core.common.Framework
 import com.dtolabs.rundeck.core.plugins.Plugin
+import com.dtolabs.rundeck.core.utils.PropertyLookupException
 import com.dtolabs.rundeck.plugins.ServiceNameConstants
 import com.dtolabs.rundeck.plugins.audit.AuditEventListener
 import com.dtolabs.rundeck.plugins.descriptions.PluginDescription
@@ -60,8 +61,12 @@ class ExampleAuditEventListener implements AuditEventListener {
         }
 
         // Get a configuration value from framework.properties
-        String configValue = event.getFramework().getProperty(EXAMPLE_CONFIG)
-
+        try {
+            String configValue = event.getFramework().getProperty(EXAMPLE_CONFIG)
+        }
+        catch (PropertyLookupException e) {
+            System.err.println("Example Plugin error getting property: " + e.getMessage())
+        }
 
         System.out.println("Example Plugin On-event!!!" + event)
     }
@@ -97,7 +102,6 @@ class ExampleAuditEventListener implements AuditEventListener {
 //    void onLoginFailed(AuditEvent event) {
 //        System.out.println("Example Plugin onLoginFailed!!!" + event)
 //    }
-
 
 
     /**
