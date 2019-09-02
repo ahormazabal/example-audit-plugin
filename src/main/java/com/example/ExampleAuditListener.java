@@ -1,6 +1,7 @@
 package com.example;
 
 import com.dtolabs.rundeck.core.audit.AuditEvent;
+import com.dtolabs.rundeck.core.audit.ResourceTypes;
 import com.dtolabs.rundeck.core.plugins.Plugin;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
 import com.dtolabs.rundeck.plugins.audit.AuditEventListener;
@@ -41,7 +42,6 @@ public class ExampleAuditListener implements AuditEventListener {
 
    */
 
-
   // will look for the 'framework.plugin.AuditEventListener.ExampleAuditListener.path' property at framework.properties.
   @PluginProperty(required = true)
   private String path;
@@ -77,12 +77,17 @@ public class ExampleAuditListener implements AuditEventListener {
     }
 
     // Write a header to the file.
-    output.format("[%-30s] %-15s %-15s %-10s %s%n",
+    output.format("[%-30s] %-15s %-20s %-20s %-15s %-37s %-35s %s%n",
         "DATE",
         "USER",
-        "ACTION",
-        "RESOURCE",
-        "ID");
+        "EVENT_NAME",
+        "RESOURCE_NAME",
+        "HOSTNAME",
+        "SERVER_UUID",
+        "SESSION_ID",
+        "SOURCE"
+    );
+
   }
 
   /**
@@ -95,31 +100,37 @@ public class ExampleAuditListener implements AuditEventListener {
   public void onEvent(AuditEvent event) {
 
 
-    String user = event.getUsername(); // Gets the username which generated the event.
+    String user = event.getUserInfo().getUsername(); // Gets the username which generated the event.
     Date ts = event.getTimestamp(); // Timestamp at which the event was generated.
-    List<String> roles = event.getUserRoles(); // List with the auth roles of the user.
+    List<String> roles = event.getUserInfo().getUserRoles(); // List with the auth roles of the user.
 
-    AuditEvent.ResourceType resourceType = event.getResourceType();
+    String resourceType = event.getResourceInfo().getType();
     // Type of resource which generated the event. (IE: user, project).
 
-    if (AuditEvent.ResourceType.project.equals(resourceType)) {
+    // Check if the resource associated to the event is a project.
+    if (ResourceTypes.PROJECT.equals(resourceType)) {
 
       // Get the project name
-      String projectName = event.getResourceName();
+      String projectName = event.getResourceInfo().getName();
 
       System.out.format("Event [%s] triggered on project [%s]: %s%n",
-          event.getAction().toString(), projectName, event.toString());
+          event.getActionType(), projectName, event.toString());
     }
 
     System.out.println("\nExample Plugin On-event!!!" + event);
 
     // Write to file.
-    output.format("[%-30s] %-15s %-15s %-10s %s%n",
+    // Write a header to the file.
+    output.format("[%-30s] %-15s %-20s %-20s %-15s %-37s %-35s %s%n",
         event.getTimestamp(),
-        event.getUsername(),
-        event.getAction(),
-        event.getResourceType(),
-        event.getResourceName());
+        event.getUserInfo().getUsername(),
+        event.getResourceInfo().getType() + "_" + event.getActionType(),
+        event.getResourceInfo().getName(),
+        event.getRequestInfo().getServerHostname(),
+        event.getRequestInfo().getServerUUID(),
+        event.getRequestInfo().getSessionID(),
+        event.getRequestInfo().getUserAgent()
+    );
 
   }
 
@@ -163,7 +174,7 @@ public class ExampleAuditListener implements AuditEventListener {
    */
   public void onLogout(AuditEvent event) {
 
-    System.out.println("\nExample Plugin User onLogout: " + event.getUsername());
+    System.out.println("\nExample Plugin User onLogout: " + event.getUserInfo().getUsername());
 
   }
 
@@ -176,7 +187,7 @@ public class ExampleAuditListener implements AuditEventListener {
    */
   public void onProjectView(AuditEvent event) {
 
-    System.out.println("\nExample Plugin onProjectView!!!" + event.getResourceName() + " event:" + event);
+    System.out.println("\nExample Plugin onProjectView!!!" + event.getResourceInfo().getName() + " event:" + event);
 
 
   }
