@@ -5,6 +5,7 @@ import com.dtolabs.rundeck.core.audit.ResourceTypes;
 import com.dtolabs.rundeck.core.plugins.Plugin;
 import com.dtolabs.rundeck.plugins.ServiceNameConstants;
 import com.dtolabs.rundeck.plugins.audit.AuditEventListener;
+import com.dtolabs.rundeck.plugins.audit.AuditEventListenerPlugin;
 import com.dtolabs.rundeck.plugins.descriptions.PluginDescription;
 import com.dtolabs.rundeck.plugins.descriptions.PluginProperty;
 
@@ -25,7 +26,7 @@ import java.util.List;
 @PluginDescription(
     title = "Example Audit Plugin",
     description = "Example plugin for implementing an auditing listener")
-public class ExampleAuditListener implements AuditEventListener {
+public class ExampleAuditListener implements AuditEventListenerPlugin {
 
   public static final String PROVIDER_NAME = "ExampleAuditListener";
 
