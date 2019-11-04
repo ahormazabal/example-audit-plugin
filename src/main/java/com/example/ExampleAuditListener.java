@@ -44,7 +44,7 @@ public class ExampleAuditListener implements AuditEventListenerPlugin {
    */
 
   // will look for the 'framework.plugin.AuditEventListener.ExampleAuditListener.path' property at framework.properties.
-  @PluginProperty(required = true)
+  @PluginProperty(defaultValue = ".")
   private String path;
 
   // will look for the 'framework.plugin.AuditEventListener.ExampleAuditListener.filename' property at framework.properties.
