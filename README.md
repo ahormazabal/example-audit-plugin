@@ -4,8 +4,14 @@ This is an example about how to use a an Audit Listener plugin to capture auditi
  
 ## Install 
 
-* build: `./gradlew clean build`
-* install: copy the file `build/libs/example-audit-plugin-1.0.0.jar` to libext folder
+* using maven build: `mvn clean package`
+* install: copy the file `target/example-audit-plugin-1.0.0.jar` to libext folder
+
+#Configure
+
+The plugin provides a default configuration, creating an 'audit.log' file at the current working directory. To configure this use the following settings on rundeck framework.properties file:
+- Use `framework.plugin.AuditEventListener.ExampleAuditListener.path=some/path` to change the output file path. 
+- Use `framework.plugin.AuditEventListener.ExampleAuditListener.filename=some.file.name` to change the output file name. 
 
 
 ## Use 
